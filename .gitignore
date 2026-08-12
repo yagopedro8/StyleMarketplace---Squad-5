@@ -1,0 +1,25 @@
+# dependencies
+node_modules/
+dist/
+
+
+
+#generated prisma
+src/generated/prisma/
+
+
+#pasta das keys 
+keys/
+
+# rsa keys
+
+id_rsa_priv.pem
+id_rsa_pub.pem
+
+.DS_Store
+.idea
+.env
+
+*.sqlite
+*.png
+*.jpg
