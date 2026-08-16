@@ -1,18 +1,28 @@
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import prisma from "../config/prisma";
+import { createUserSchema } from "../schemas/userSchema";
 
 export async function createUser(req: Request, res: Response) {
   try {
-    const {
-      firstName,
-      lastName,
-      email,
-      password,
-      gender,
-      phoneNumber,
-      dateBirth,
-    } = req.body;
+    const result = createUserSchema.safeParse(req.body);
+
+if (!result.success) {
+  return res.status(400).json({
+    message: "Dados inválidos.",
+    errors: result.error.flatten().fieldErrors,
+  });
+}
+
+  const {
+    firstName,
+    lastName,
+    email,
+    password,
+    gender,
+    phoneNumber,
+    dateBirth,
+  } = result.data;
 
     if (!firstName || !lastName || !email || !password) {
       return res.status(400).json({
@@ -40,8 +50,8 @@ export async function createUser(req: Request, res: Response) {
         lastName,
         email,
         password: hashedPassword,
-        gender,
-        phoneNumber,
+        gender: gender ?? null,
+        phoneNumber: phoneNumber ?? null,
         dateBirth: dateBirth ? new Date(dateBirth) : null,
       },
     });

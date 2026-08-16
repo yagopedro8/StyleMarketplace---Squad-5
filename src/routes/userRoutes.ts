@@ -17,4 +17,4 @@ userRouter.get("/:id", authMiddleware, getUserById);
 userRouter.put("/:id", authMiddleware, updateUser);
 userRouter.delete("/:id", authMiddleware, deleteUser);
 
-export default userRouter;
+export default userRouter; 
