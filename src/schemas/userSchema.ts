@@ -9,3 +9,5 @@ export const createUserSchema = z.object({
   phoneNumber: z.string().optional(),
   dateBirth: z.string().optional(),
 });
+
+export const updateUserSchema = createUserSchema.partial();
