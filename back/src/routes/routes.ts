@@ -52,7 +52,7 @@ router.delete(
   deleteUser
 );
 
-// Login
+// Auth
 
 router.post(
   "/login",
