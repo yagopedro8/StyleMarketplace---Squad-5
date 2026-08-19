@@ -11,3 +11,15 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+model Product {
+  id           Int     @id @default(autoincrement())
+  name         String
+  description  String
+  price        Float
+  salePrice    Float?
+  rating       Float   @default(0)
+  numOfReviews Int     @default(0)
+  isOutOfStock Boolean @default(false)
+  photoUrl     String?
+}
