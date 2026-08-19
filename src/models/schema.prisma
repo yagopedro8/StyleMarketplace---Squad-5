@@ -11,3 +11,10 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+model Variant {
+  id Int @id @default(autoincrement())
+  color String
+  size String
+  stock Int
+}

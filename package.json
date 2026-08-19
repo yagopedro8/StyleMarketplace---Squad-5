@@ -25,5 +25,9 @@
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.9.1"
+  },
+  "allowScripts": {
+    "prisma@7.9.1": true,
+    "@prisma/engines@7.9.1": true
   }
 }
