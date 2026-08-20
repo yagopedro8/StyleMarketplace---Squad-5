@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "npx ts-node-dev --transpile-only --no-notify src/server.ts"
+    "start": "npx ts-node-dev --transpile-only --no-notify src/server.ts",
+    "keys": "npx ts-node src/config/generateKeys.ts"
   },
   "keywords": [],
   "author": "",
