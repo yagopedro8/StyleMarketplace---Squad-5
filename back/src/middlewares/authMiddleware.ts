@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import jwt from "jsonwebtoken";
+import auth from "../config/auth";
 
 export function authMiddleware(
   req: Request,
@@ -22,13 +22,13 @@ export function authMiddleware(
     });
   }
 
-  try {
-    jwt.verify(token, process.env.JWT_SECRET!);
+  const decodedToken = auth.decodeJWT(token);
 
-    next();
-  } catch {
+  if (!decodedToken) {
     return res.status(401).json({
       message: "Token inválido ou expirado.",
     });
   }
-}
+
+  next();
+} 

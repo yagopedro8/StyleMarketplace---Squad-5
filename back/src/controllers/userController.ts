@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
-import bcrypt from "bcrypt";
 import prisma from "../config/prisma";
-import jwt from "jsonwebtoken";
+import auth from "../config/auth";
 
 export async function createUser(req: Request, res: Response) {
   try {
@@ -33,21 +32,26 @@ export async function createUser(req: Request, res: Response) {
       });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const { salt, hash } = auth.generatePassword(password);
 
     const user = await prisma.user.create({
       data: {
         firstName,
         lastName,
         email,
-        password: hashedPassword,
+        hash,
+        salt,
         gender: gender ?? null,
         phoneNumber: phoneNumber ?? null,
         dateBirth: dateBirth ? new Date(dateBirth) : null,
       },
     });
 
-    const { password: _, ...userWithoutPassword } = user;
+    const {
+    hash: _hash,
+    salt: _salt,
+    ...userWithoutPassword
+    } = user;
 
     return res.status(201).json({
       message: "Usuário criado com sucesso.",
@@ -150,28 +154,38 @@ export async function updateUser(req: Request, res: Response) {
       });
     }
 
-    let hashedPassword = userExists.password;
+    let hash = userExists.hash;
+    let salt = userExists.salt;
 
     if (password) {
-      hashedPassword = await bcrypt.hash(password, 10);
+      const { hash: newHash, salt: newSalt } =
+        auth.generatePassword(password);
+
+      hash = newHash;
+      salt = newSalt;
     }
 
     const updatedUser = await prisma.user.update({
       where: { id },
       data: {
-      firstName,
-      lastName,
-      email,
-      password: hashedPassword,
-      gender,
-      phoneNumber,
+        firstName,
+        lastName,
+        email,
+        hash,
+        salt,
+        gender,
+        phoneNumber,
         ...(dateBirth && {
           dateBirth: new Date(dateBirth),
         }),
-  },
-});
+      },
+    });
 
-    const { password: _, ...userWithoutPassword } = updatedUser;
+    const {
+      hash: _hash,
+      salt: _salt,
+      ...userWithoutPassword
+    } = updatedUser;
 
     return res.status(200).json({
       message: "Usuário atualizado com sucesso.",
@@ -235,10 +249,11 @@ export async function login(req: Request, res: Response) {
       });
     }
 
-    const passwordIsValid = await bcrypt.compare(
-      password,
-      user.password
-    );
+    const passwordIsValid = auth.checkPassword(
+    password,
+    user.hash,
+    user.salt
+);
 
     if (!passwordIsValid) {
       return res.status(401).json({
@@ -246,15 +261,7 @@ export async function login(req: Request, res: Response) {
       });
     }
 
-    const token = jwt.sign(
-      {
-        userId: user.id,
-      },
-      process.env.JWT_SECRET!,
-      {
-        expiresIn: "1d",
-      }
-    );
+    const token = auth.generateJWT(user.id.toString());
 
     return res.status(200).json({
       message: "Login realizado com sucesso.",
