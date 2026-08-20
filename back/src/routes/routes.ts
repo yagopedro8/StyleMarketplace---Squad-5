@@ -9,6 +9,8 @@ import {
   login,
 } from "../controllers/userController";
 
+import { criarVariant, listarVariants, buscarVariant, atualizarVariant, deletarVariant } from "../controllers/variantController";
+
 import { authMiddleware } from "../middlewares/authMiddleware";
 import { validate } from "../middlewares/validateMiddleware";
 
@@ -58,5 +60,12 @@ router.post(
   "/login",
   login
 );
+
+// Variant routes
+router.post("/variants", criarVariant);
+router.get("/variants", listarVariants);
+router.get("/variants/:id", buscarVariant);
+router.put("/variants/:id", atualizarVariant);
+router.delete("/variants/:id", deletarVariant);
 
 export default router;
