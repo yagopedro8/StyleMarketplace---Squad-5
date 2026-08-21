@@ -21,6 +21,19 @@ import {
 
 const router = Router();
 
+import {
+  createOrder,
+  getOrders,
+  getOrderById,
+  updateOrder,
+  deleteOrder,
+} from "../controllers/orderController";
+
+import {
+  createOrderSchema,
+  updateOrderSchema,
+} from "../schemas/orderSchema";
+
 // User routes
 
 router.post(
@@ -52,6 +65,40 @@ router.delete(
   "/users/:id",
   authMiddleware,
   deleteUser
+);
+
+// Order routes
+
+router.post(
+  "/orders",
+  authMiddleware,
+  validate(createOrderSchema),
+  createOrder
+);
+
+router.get(
+  "/orders",
+  authMiddleware,
+  getOrders
+);
+
+router.get(
+  "/orders/:id",
+  authMiddleware,
+  getOrderById
+);
+
+router.put(
+  "/orders/:id",
+  authMiddleware,
+  validate(updateOrderSchema),
+  updateOrder
+);
+
+router.delete(
+  "/orders/:id",
+  authMiddleware,
+  deleteOrder
 );
 
 // Auth
