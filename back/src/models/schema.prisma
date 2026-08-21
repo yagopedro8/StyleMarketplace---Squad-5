@@ -23,3 +23,26 @@ model Product {
   isOutOfStock Boolean @default(false)
   photoUrl     String?
 }
+
+model User {
+  id            Int       @id @default(autoincrement())
+  firstName     String
+  lastName      String
+  email         String    @unique
+  hash          String
+  salt          String
+  gender        String?
+  phoneNumber   String?
+  dateBirth     DateTime?
+  memberSince   DateTime  @default(now())
+  totalOrders   Int       @default(0)
+  totalRating   Float     @default(0)
+  totalWishlist Int       @default(0)
+}
+
+model Variant {
+  id    Int    @id @default(autoincrement())
+  color String
+  size  String
+  stock Int
+}

@@ -85,15 +85,12 @@ export async function updateProduct(req: Request, res: Response) {
     const id = Number(req.params.id);
 
     const {
-      name,
-      description,
-      price,
-      salePrice,
-      rating,
-      numOfReviews,
-      isOutOfStock,
-      photoUrl,
-    } = req.body;
+    name,
+    description,
+    price,
+    salePrice,
+    photoUrl,
+  } = req.body;
 
     const productExists = await prisma.product.findUnique({
       where: {
@@ -128,18 +125,6 @@ export async function updateProduct(req: Request, res: Response) {
             salePrice !== null
               ? Number(salePrice)
               : null,
-        }),
-
-        ...(rating !== undefined && {
-          rating: Number(rating),
-        }),
-
-        ...(numOfReviews !== undefined && {
-          numOfReviews: Number(numOfReviews),
-        }),
-
-        ...(isOutOfStock !== undefined && {
-          isOutOfStock,
         }),
 
         ...(photoUrl !== undefined && {
