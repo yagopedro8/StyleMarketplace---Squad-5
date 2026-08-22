@@ -32,6 +32,19 @@ import {
   updateProductSchema,
 } from "../schemas/productSchema";
 
+import {
+  createSale,
+  getSales,
+  getSaleById,
+  updateSale,
+  deleteSale,
+} from "../controllers/saleController";
+
+import {
+  createSaleSchema,
+  updateSaleSchema,
+} from "../schemas/saleSchema";
+
 const router = Router();
 
 // User routes
@@ -96,6 +109,38 @@ router.delete(
   "/products/:id",
   authMiddleware,
   deleteProduct
+);
+
+// Sale routes
+
+router.post(
+  "/sales",
+  authMiddleware,
+  validate(createSaleSchema),
+  createSale
+);
+
+router.get(
+  "/sales",
+  getSales
+);
+
+router.get(
+  "/sales/:id",
+  getSaleById
+);
+
+router.put(
+  "/sales/:id",
+  authMiddleware,
+  validate(updateSaleSchema),
+  updateSale
+);
+
+router.delete(
+  "/sales/:id",
+  authMiddleware,
+  deleteSale
 );
 
 // Auth
