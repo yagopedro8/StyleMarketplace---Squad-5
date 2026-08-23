@@ -22,7 +22,7 @@ const outOfStockItems = [
     price: 45.0,
   },
 ];
-
+//testar calculadora
 export function CartPage() {
   const {
     cart,
