@@ -54,7 +54,6 @@ export function ProductPage() {
     );
   }
 
-  // Testar a parte abaixo pra ver se o erro sumiu de fato
   const currentProduct = product;
 
   const relatedProducts = products
