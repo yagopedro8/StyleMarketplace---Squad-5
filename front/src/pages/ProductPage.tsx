@@ -35,7 +35,6 @@ export function ProductPage() {
     (p) => String(p.id) === productId
   );
 
-  // Se o produto não existir, volta para a Sale
   if (!product) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
@@ -55,7 +54,7 @@ export function ProductPage() {
     );
   }
 
-  // Depois dessa verificação, currentProduct é garantidamente Product
+  // Testar a parte abaixo pra ver se o erro sumiu de fato
   const currentProduct = product;
 
   const relatedProducts = products
@@ -220,6 +219,7 @@ export function ProductPage() {
               </div>
             </div>
 
+            /*Conferir se o tamanho não bugou denovo*/
             {/* Tamanho */}
             <div className="mb-4">
               <div className="flex items-center justify-between mb-2">
