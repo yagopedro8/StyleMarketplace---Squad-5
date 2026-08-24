@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { uploadSingle } from "../config/uploader";
 
 import {
   createUser,
@@ -71,9 +72,10 @@ router.delete(
 router.post(
   "/products",
   authMiddleware,
-  validate(createProductSchema),
+  uploadSingle,
   createProduct
 );
+
 
 router.get(
   "/products",
@@ -88,7 +90,7 @@ router.get(
 router.put(
   "/products/:id",
   authMiddleware,
-  validate(updateProductSchema),
+  uploadSingle,
   updateProduct
 );
 
