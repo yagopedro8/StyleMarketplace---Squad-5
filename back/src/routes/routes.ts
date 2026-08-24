@@ -32,6 +32,19 @@ import {
   updateProductSchema,
 } from "../schemas/productSchema";
 
+import {
+  createWishlist,
+  getWishlists,
+  getWishlistById,
+  updateWishlist,
+  deleteWishlist,
+} from "../controllers/wishlistController";
+
+import {
+  createWishlistSchema,
+  updateWishlistSchema,
+} from "../schemas/wishlistSchema";
+
 const router = Router();
 
 // User routes
@@ -111,5 +124,39 @@ router.get("/variants", listarVariants);
 router.get("/variants/:id", buscarVariant);
 router.put("/variants/:id", atualizarVariant);
 router.delete("/variants/:id", deletarVariant);
+
+// Wishlist routes
+
+router.post(
+  "/wishlists",
+  authMiddleware,
+  validate(createWishlistSchema),
+  createWishlist
+);
+
+router.get(
+  "/wishlists",
+  authMiddleware,
+  getWishlists
+);
+
+router.get(
+  "/wishlists/:id",
+  authMiddleware,
+  getWishlistById
+);
+
+router.put(
+  "/wishlists/:id",
+  authMiddleware,
+  validate(updateWishlistSchema),
+  updateWishlist
+);
+
+router.delete(
+  "/wishlists/:id",
+  authMiddleware,
+  deleteWishlist
+);
 
 export default router;
