@@ -6,9 +6,11 @@ type PasswordInputProps = {
   label: string
   placeholder: string
   showForgotPassword?: boolean
+  value: string
+  onChange: (value: string) => void
 }
 
-export function PasswordInput({ label, placeholder, showForgotPassword = false }: PasswordInputProps) {
+export function PasswordInput({ label, placeholder, showForgotPassword = false, value, onChange }: PasswordInputProps) {
   const [showPassword, setShowPassword] = useState(false)
 
   return (
@@ -24,6 +26,8 @@ export function PasswordInput({ label, placeholder, showForgotPassword = false }
         <Lock className="absolute text-[#6B7280] left-3 top-3 w-4 h-4" />
         <input
           type={showPassword ? "text" : "password"}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
           className="w-full border border-[#E5E7EB] rounded-lg pl-10 pr-3 py-2 text-sm"
         />

@@ -6,9 +6,11 @@ type FormInputProps = {
   label: string
   type?: string
   placeholder: string
+  value:string
+  onChange: (value: string) => void
 }
 
-export function FormInput({ icon: Icon, label, type = "text", placeholder }: FormInputProps) {
+export function FormInput({ icon: Icon, label, type = "text", placeholder, value, onChange }: FormInputProps) {
   return (
     <div>
       <label className="text-sm font-semibold block mb-2">{label}</label>
@@ -18,6 +20,8 @@ export function FormInput({ icon: Icon, label, type = "text", placeholder }: For
         )} 
         <input
           type={type}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
           className= {`w-full border border-[#E5E7EB] rounded-lg  py-2 text-sm ${Icon ? "pl-10 pr-3" : "px-3"}`}
         />
