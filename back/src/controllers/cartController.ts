@@ -22,11 +22,22 @@ export const listarCarts = async (_req: Request, res: Response) => {
 }
 
 export const buscarCart = async (req: Request, res: Response) => {
-    const cart = await prisma.cart.findUnique ({
-        where: { id: Number(req.params.id) },
-    })
-    if (!cart) return res.status(404).json({erro: "Cart não encontrado"})
-    return res.json(cart)
+  const cart = await prisma.cart.findUnique({
+    where: { id: Number(req.params.id) },
+    include: {
+      cartVariants: {
+        include: {
+          variant: {
+            include: {
+              product: true,
+            },
+          },
+        },
+      },
+    },
+  })
+  if (!cart) return res.status(404).json({ erro: "Cart não encontrado" })
+  return res.json(cart)
 }
 
 export const atualizarCart = async (req: Request, res: Response) => {
