@@ -37,7 +37,7 @@ export function ProductPage() {
 
   if (!product) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
+      <div className="min-h-screen bg-white flex items-center justify-center px-4">
         <div className="text-center">
           <h1 className="text-xl font-bold mb-2">
             Product not found
@@ -89,9 +89,8 @@ export function ProductPage() {
     <div className="min-h-screen bg-white">
       <PageHeader />
 
-      <div className="max-w-6xl mx-auto px-6 py-8">
-        {/* Breadcrumb */}
-        <p className="text-xs text-[#6B7280] mb-4">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+        <p className="text-xs text-[#6B7280] mb-4 break-words">
           <Link to="/" className="text-[#454b54]">
             Home
           </Link>{" "}
@@ -102,10 +101,9 @@ export function ProductPage() {
           / {currentProduct.name}
         </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {/* Galeria */}
-          <div>
-            <div className="relative h-80 md:h-96 rounded-lg bg-[#EDEDED] overflow-hidden">
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+          <div className="min-w-0">
+            <div className="relative h-80 sm:h-96 rounded-lg bg-[#EDEDED] overflow-hidden">
               <img
                 src={currentProduct.image}
                 alt={currentProduct.name}
@@ -147,9 +145,8 @@ export function ProductPage() {
             </div>
           </div>
 
-          {/* Detalhes */}
-          <div>
-            <div className="flex items-center justify-between mb-1">
+          <div className="min-w-0">
+            <div className="flex flex-wrap items-center justify-between gap-2 mb-1">
               <span className="text-xs font-bold text-[#6B7280] tracking-widest">
                 {currentProduct.badge}
               </span>
@@ -159,11 +156,11 @@ export function ProductPage() {
               </span>
             </div>
 
-            <h1 className="text-2xl font-bold mb-2">
+            <h1 className="text-2xl font-bold mb-2 break-words">
               {currentProduct.name}
             </h1>
 
-            <div className="flex items-center gap-1 text-xs text-[#6B7280] mb-3">
+            <div className="flex flex-wrap items-center gap-1 text-xs text-[#6B7280] mb-3">
               <Star className="w-3 h-3 fill-[#F6BA00] text-[#F6BA00]" />
 
               <strong className="text-black">
@@ -173,7 +170,7 @@ export function ProductPage() {
               ({currentProduct.reviews} reviews)
             </div>
 
-            <div className="flex items-center gap-2 mb-1">
+            <div className="flex flex-wrap items-center gap-2 mb-1">
               <strong className="text-[#EF3340] text-xl">
                 ${currentProduct.price}
               </strong>
@@ -193,7 +190,6 @@ export function ProductPage() {
               In Stock
             </p>
 
-            {/* Cores */}
             <div className="mb-4">
               <h3 className="text-sm font-semibold mb-2">
                 Color: {selectedColor}
@@ -218,10 +214,8 @@ export function ProductPage() {
               </div>
             </div>
 
-            /*Conferir se o tamanho não bugou denovo*/
-            {/* Tamanho */}
             <div className="mb-4">
-              <div className="flex items-center justify-between mb-2">
+              <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
                 <h3 className="text-sm font-semibold">
                   Size
                 </h3>
@@ -234,7 +228,7 @@ export function ProductPage() {
                 </button>
               </div>
 
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 {sizes.map((s) => (
                   <button
                     type="button"
@@ -254,7 +248,6 @@ export function ProductPage() {
               </div>
             </div>
 
-            {/* Quantidade */}
             <div className="mb-5">
               <h3 className="text-sm font-semibold mb-2">
                 Quantity
@@ -287,12 +280,11 @@ export function ProductPage() {
               </div>
             </div>
 
-            {/* Ações */}
-            <div className="flex items-center gap-2 mb-6">
+            <div className="grid grid-cols-1 sm:grid-cols-[1fr_1fr_auto] gap-2 mb-6">
               <button
                 type="button"
                 onClick={handleAddToCart}
-                className="flex-1 flex items-center justify-center gap-2 bg-black text-white rounded-lg py-3 text-sm font-semibold"
+                className="w-full flex items-center justify-center gap-2 bg-black text-white rounded-lg py-3 text-sm font-semibold"
               >
                 <ShoppingCart className="w-4 h-4" />
                 Add to Cart
@@ -304,21 +296,20 @@ export function ProductPage() {
                   handleAddToCart();
                   navigate("/cart");
                 }}
-                className="flex-1 border border-black rounded-lg py-3 text-sm font-semibold"
+                className="w-full border border-black rounded-lg py-3 text-sm font-semibold"
               >
                 Buy Now
               </button>
 
               <button
                 type="button"
-                className="w-10 h-10 flex items-center justify-center border border-[#E5E7EB] rounded-lg"
+                className="w-full sm:w-10 h-10 sm:h-auto flex items-center justify-center border border-[#E5E7EB] rounded-lg"
               >
                 <Share2 className="w-4 h-4" />
               </button>
             </div>
 
-            {/* Benefícios */}
-            <div className="grid grid-cols-3 gap-4 border-t border-[#E5E7EB] pt-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 border-t border-[#E5E7EB] pt-4">
               {[
                 {
                   icon: Truck,
@@ -348,15 +339,14 @@ export function ProductPage() {
           </div>
         </div>
 
-        {/* Tabs */}
         <div className="mt-10">
-          <div className="flex gap-6 border-b border-[#E5E7EB]">
+          <div className="flex gap-4 sm:gap-6 overflow-x-auto border-b border-[#E5E7EB]">
             {tabs.map((tab) => (
               <button
                 type="button"
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`pb-3 text-sm border-b-2 ${
+                className={`pb-3 text-sm border-b-2 whitespace-nowrap ${
                   activeTab === tab
                     ? "border-black font-semibold"
                     : "border-transparent text-[#6B7280]"
@@ -388,7 +378,6 @@ export function ProductPage() {
           </div>
         </div>
 
-        {/* Relacionados */}
         {relatedProducts.length > 0 && (
           <div className="mt-10">
             <h2 className="text-xl font-bold mb-4">

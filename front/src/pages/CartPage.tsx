@@ -22,6 +22,7 @@ const outOfStockItems = [
     price: 45.0,
   },
 ];
+
 export function CartPage() {
   const {
     cart,
@@ -52,21 +53,23 @@ export function CartPage() {
     <div className="min-h-screen bg-white">
       <PageHeader />
 
-      <div className="max-w-6xl mx-auto px-6 py-8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
         <div className="flex items-center gap-2 mb-6">
-          <ShoppingBag className="w-5 h-5" />
-          <h1 className="text-xl font-bold">Shopping Cart</h1>
+          <ShoppingBag className="w-5 h-5 shrink-0" />
+          <h1 className="text-xl font-bold">
+            Shopping Cart
+          </h1>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6 items-start">
-          <div>
+        <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_320px] gap-6 items-start">
+          <div className="min-w-0">
             <div className="flex items-center gap-2 text-sm font-semibold mb-3">
-              <span className="w-2 h-2 rounded-full bg-green-500" />
+              <span className="w-2 h-2 rounded-full bg-green-500 shrink-0" />
               Available Items ({cart.length})
             </div>
 
             {cart.length === 0 ? (
-              <div className="border border-[#E5E7EB] rounded-lg p-10 text-center">
+              <div className="border border-[#E5E7EB] rounded-lg p-6 sm:p-10 text-center">
                 <ShoppingBag className="w-10 h-10 mx-auto mb-3 text-[#9CA3AF]" />
 
                 <h2 className="text-base font-semibold mb-1">
@@ -79,7 +82,7 @@ export function CartPage() {
 
                 <Link
                   to="/"
-                  className="inline-block bg-black text-white rounded-lg px-5 py-2.5 text-sm font-semibold"
+                  className="inline-block bg-black !text-white rounded-lg px-5 py-2.5 text-sm font-semibold"
                 >
                   Continue Shopping
                 </Link>
@@ -90,9 +93,8 @@ export function CartPage() {
                   {cart.map((item) => (
                     <div
                       key={item.id}
-                      className="flex gap-4 border border-[#E5E7EB] rounded-lg p-3"
+                      className="flex flex-wrap sm:flex-nowrap gap-3 sm:gap-4 border border-[#E5E7EB] rounded-lg p-3"
                     >
-                      {/* Imagem clicável */}
                       <Link
                         to={`/product/${item.id}`}
                         className="w-20 h-20 rounded-md bg-[#EDEDED] shrink-0 overflow-hidden block"
@@ -111,10 +113,9 @@ export function CartPage() {
                       </Link>
 
                       <div className="flex-1 min-w-0">
-                        {/* Nome clicável */}
                         <Link
                           to={`/product/${item.id}`}
-                          className="text-sm font-semibold hover:underline"
+                          className="text-sm font-semibold hover:underline break-words"
                         >
                           {item.name}
                         </Link>
@@ -124,7 +125,7 @@ export function CartPage() {
                         </p>
 
                         {(item.size || item.color) && (
-                          <p className="text-xs text-[#6B7280] mb-2">
+                          <p className="text-xs text-[#6B7280] mb-2 break-words">
                             {item.size && `Size: ${item.size}`}
                             {item.size && item.color && " · "}
                             {item.color && `Color: ${item.color}`}
@@ -163,7 +164,7 @@ export function CartPage() {
                           </button>
                         </div>
 
-                        <div className="flex gap-4 text-xs text-[#6B7280]">
+                        <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-[#6B7280]">
                           <button className="flex items-center gap-1 hover:text-black transition">
                             <Heart className="w-3 h-3" />
                             Save for Later
@@ -181,8 +182,8 @@ export function CartPage() {
                         </div>
                       </div>
 
-                      <div className="flex flex-col items-end gap-1 text-right shrink-0">
-                        <strong className="text-sm">
+                      <div className="flex flex-col items-end gap-1 text-right shrink-0 ml-auto">
+                        <strong className="text-sm whitespace-nowrap">
                           $
                           {(
                             item.price * item.quantity
@@ -190,7 +191,7 @@ export function CartPage() {
                         </strong>
 
                         {item.oldPrice && (
-                          <del className="text-xs text-[#9ca1aa]">
+                          <del className="text-xs text-[#9ca1aa] whitespace-nowrap">
                             $
                             {(
                               item.oldPrice *
@@ -200,7 +201,7 @@ export function CartPage() {
                         )}
 
                         {item.discount && (
-                          <span className="text-[10px] text-[#EF3340] bg-red-50 px-1.5 py-0.5 rounded">
+                          <span className="text-[10px] text-[#EF3340] bg-red-50 px-1.5 py-0.5 rounded whitespace-nowrap">
                             {item.discount}
                           </span>
                         )}
@@ -223,7 +224,7 @@ export function CartPage() {
             {outOfStockItems.length > 0 && (
               <>
                 <div className="flex items-center gap-2 text-sm font-semibold text-[#9ca1aa] mt-6 mb-3">
-                  <span className="w-2 h-2 rounded-full bg-[#EF3340]" />
+                  <span className="w-2 h-2 rounded-full bg-[#EF3340] shrink-0" />
                   Out of Stock ({outOfStockItems.length})
                 </div>
 
@@ -231,29 +232,29 @@ export function CartPage() {
                   {outOfStockItems.map((item) => (
                     <div
                       key={item.id}
-                      className="flex gap-4 border border-[#E5E7EB] rounded-lg p-3 opacity-75"
+                      className="flex flex-wrap sm:flex-nowrap gap-3 sm:gap-4 border border-[#E5E7EB] rounded-lg p-3 opacity-75"
                     >
-                      <div className="relative w-20 h-20 rounded-md bg-[#EDEDED]">
-                        <span className="absolute bottom-1 left-1 bg-[#EF3340] text-white text-[9px] px-1.5 py-0.5 rounded">
+                      <div className="relative w-20 h-20 rounded-md bg-[#EDEDED] shrink-0">
+                        <span className="absolute bottom-1 left-1 bg-[#EF3340] text-white text-[9px] px-1.5 py-0.5 rounded whitespace-nowrap">
                           Out of Stock
                         </span>
                       </div>
 
-                      <div className="flex-1">
-                        <h3 className="text-sm font-semibold">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-sm font-semibold break-words">
                           {item.name}
                         </h3>
 
-                        <p className="text-xs text-[#6B7280] mb-2">
+                        <p className="text-xs text-[#6B7280] mb-2 break-words">
                           Size: {item.size} · Color: {item.color}
                         </p>
 
                         <button className="flex items-center gap-1 bg-black text-white text-xs rounded-lg px-3 py-1.5 mb-2">
-                          <BellRing className="w-3 h-3" />
+                          <BellRing className="w-3 h-3 shrink-0" />
                           Notify When Available
                         </button>
 
-                        <div className="flex gap-4 text-xs text-[#6B7280]">
+                        <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-[#6B7280]">
                           <button className="flex items-center gap-1">
                             <Heart className="w-3 h-3" />
                             Save for Later
@@ -266,8 +267,8 @@ export function CartPage() {
                         </div>
                       </div>
 
-                      <div className="text-right shrink-0">
-                        <strong className="text-sm">
+                      <div className="text-right shrink-0 ml-auto">
+                        <strong className="text-sm whitespace-nowrap">
                           ${item.price.toFixed(2)}
                         </strong>
                       </div>
@@ -278,7 +279,7 @@ export function CartPage() {
             )}
           </div>
 
-          <aside className="flex flex-col gap-4">
+          <aside className="flex flex-col gap-4 min-w-0">
             <div className="border border-[#E5E7EB] rounded-lg p-4">
               <h3 className="text-sm font-semibold mb-3">
                 Promo Code
@@ -291,10 +292,10 @@ export function CartPage() {
                     setPromoCode(e.target.value)
                   }
                   placeholder="Enter promo code"
-                  className="flex-1 border border-[#E5E7EB] rounded-lg px-3 py-2 text-sm outline-none"
+                  className="min-w-0 flex-1 border border-[#E5E7EB] rounded-lg px-3 py-2 text-sm outline-none"
                 />
 
-                <button className="bg-black text-white rounded-lg px-3 py-2 text-sm font-semibold">
+                <button className="bg-black text-white rounded-lg px-3 py-2 text-sm font-semibold shrink-0">
                   Apply
                 </button>
               </div>
@@ -309,7 +310,7 @@ export function CartPage() {
                 Order Summary
               </h3>
 
-              <div className="flex justify-between text-sm text-[#454b54] mb-2">
+              <div className="flex justify-between gap-4 text-sm text-[#454b54] mb-2">
                 <span>
                   Subtotal (
                   {cart.reduce(
@@ -320,32 +321,38 @@ export function CartPage() {
                   items)
                 </span>
 
-                <span>${subtotal.toFixed(2)}</span>
+                <span className="shrink-0">
+                  ${subtotal.toFixed(2)}
+                </span>
               </div>
 
-              <div className="flex justify-between text-sm mb-2">
+              <div className="flex justify-between gap-4 text-sm mb-2">
                 <span className="text-[#454b54]">
                   Savings
                 </span>
 
-                <span className="text-green-600">
+                <span className="text-green-600 shrink-0">
                   -${savings.toFixed(2)}
                 </span>
               </div>
 
-              <div className="flex justify-between text-sm text-[#454b54] mb-2">
+              <div className="flex justify-between gap-4 text-sm text-[#454b54] mb-2">
                 <span>Shipping</span>
-                <span>Free</span>
+                <span className="shrink-0">Free</span>
               </div>
 
-              <div className="flex justify-between text-sm text-[#454b54] mb-3">
+              <div className="flex justify-between gap-4 text-sm text-[#454b54] mb-3">
                 <span>Tax</span>
-                <span>${tax.toFixed(2)}</span>
+                <span className="shrink-0">
+                  ${tax.toFixed(2)}
+                </span>
               </div>
 
-              <div className="flex justify-between text-base font-bold border-t border-[#E5E7EB] pt-3 mb-4">
+              <div className="flex justify-between gap-4 text-base font-bold border-t border-[#E5E7EB] pt-3 mb-4">
                 <span>Total</span>
-                <span>${total.toFixed(2)}</span>
+                <span className="shrink-0">
+                  ${total.toFixed(2)}
+                </span>
               </div>
 
               <button
@@ -362,8 +369,8 @@ export function CartPage() {
                 Continue Shopping
               </Link>
 
-              <p className="flex items-center justify-center gap-1 text-[10px] text-[#6B7280]">
-                <ShieldCheck className="w-3 h-3" />
+              <p className="flex items-center justify-center gap-1 text-[10px] text-[#6B7280] text-center">
+                <ShieldCheck className="w-3 h-3 shrink-0" />
                 Secure checkout - your information is safe &
                 encrypted
               </p>

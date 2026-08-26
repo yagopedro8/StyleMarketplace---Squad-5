@@ -21,8 +21,7 @@ export function HomePage() {
     <div className="min-h-screen bg-white">
       <PageHeader />
 
-      {/* Hero */}
-      <section className="bg-gradient-to-r from-[#C52B3C] via-[#D82D50] to-[#C51A75] text-white text-center py-16 px-4">
+      <section className="bg-white text-[#111827] text-center py-16 px-4">
         <span className="text-xs font-bold tracking-widest">
           NEW COLLECTION
         </span>
@@ -31,7 +30,7 @@ export function HomePage() {
           Style Redefined
         </h1>
 
-        <p className="max-w-xl mx-auto text-sm opacity-95 mb-6">
+        <p className="max-w-xl mx-auto text-sm text-[#4B5563] mb-6">
           Discover the latest trends in fashion. Premium quality, sustainable
           materials, timeless designs.
         </p>
@@ -39,21 +38,20 @@ export function HomePage() {
         <div className="flex flex-wrap justify-center gap-3">
           <button
             onClick={() => navigate("/sale")}
-            className="bg-white text-[#EF3340] rounded-full px-5 py-2 text-sm font-semibold"
+            className="bg-[#111827] text-white rounded-full px-5 py-2 text-sm font-semibold"
           >
             Shop Now →
           </button>
 
           <button
             onClick={() => navigate("/sale")}
-            className="border border-white/60 text-white rounded-full px-5 py-2 text-sm font-semibold"
+            className="border border-[#111827] text-[#111827] rounded-full px-5 py-2 text-sm font-semibold"
           >
             View Collection
           </button>
         </div>
       </section>
 
-      {/* Perks */}
       <section className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-6 px-6 py-8 border-b border-[#E5E7EB]">
         {[
           {
@@ -83,7 +81,6 @@ export function HomePage() {
         ))}
       </section>
 
-      {/* Categorias */}
       <section className="max-w-6xl mx-auto px-6 py-10 text-center">
         <span className="text-xs font-bold text-[#6B7280] tracking-widest">
           BROWSE
@@ -118,7 +115,6 @@ export function HomePage() {
         </div>
       </section>
 
-      {/* Produtos em destaque */}
       <section className="max-w-6xl mx-auto px-6 py-10">
         <span className="text-xs font-bold text-[#6B7280] tracking-widest">
           HANDPICKED
@@ -139,7 +135,6 @@ export function HomePage() {
         </div>
       </section>
 
-      {/* Newsletter */}
       <section className="bg-gradient-to-r from-[#FA3944] to-[#F21E68] text-white text-center py-12 px-4">
         <span className="text-xs opacity-80 tracking-widest">
           STAY UPDATED
