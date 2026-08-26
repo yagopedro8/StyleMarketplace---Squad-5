@@ -3,9 +3,14 @@ import prisma from '../config/prisma'
 
 export const criarVariant = async (req: Request, res: Response) => {
   try {
-    const { color, size, stock } = req.body
+    const { color, size, stock, productId } = req.body
     const variant = await prisma.variant.create({
-      data: { color, size, stock: Number(stock) },
+      data: {
+        color,
+        size,
+        stock: Number(stock),
+        productId: Number(productId),
+      },
     })
     return res.status(201).json(variant)
   } catch (e) {
