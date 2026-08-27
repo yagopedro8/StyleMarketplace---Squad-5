@@ -44,6 +44,21 @@ import {
   createSaleSchema,
   updateSaleSchema,
 } from "../schemas/saleSchema";
+import {  
+  criarCart,
+  listarCarts,
+  buscarCart,
+  atualizarCart,
+  deletarCart,
+} from "../controllers/cartController";
+
+import {
+  criarCartVariant,
+  listarCartVariants,
+  buscarCartVariant,
+  atualizarCartVariant,
+  deletarCartVariant,
+} from "../controllers/cartVariantController";
 
 const router = Router();
 
@@ -156,5 +171,19 @@ router.get("/variants", listarVariants);
 router.get("/variants/:id", buscarVariant);
 router.put("/variants/:id", atualizarVariant);
 router.delete("/variants/:id", deletarVariant);
+
+// Cart routes
+router.post("/carts", criarCart);
+router.get("/carts", listarCarts);
+router.get("/carts/:id", buscarCart);
+router.put("/carts/:id", atualizarCart);
+router.delete("/carts/:id", deletarCart);
+
+// CartVariant routes
+router.post("/cart-variants", criarCartVariant);
+router.get("/cart-variants", listarCartVariants);
+router.get("/cart-variants/:id", buscarCartVariant);
+router.put("/cart-variants/:id", atualizarCartVariant);
+router.delete("/cart-variants/:id", deletarCartVariant);
 
 export default router;

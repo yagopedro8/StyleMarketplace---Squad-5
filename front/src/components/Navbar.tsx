@@ -1,10 +1,14 @@
 import { useState } from "react"
 import { Heart, User, ShoppingBag, Search, Menu, X } from "lucide-react"
+import { useNavigate } from "react-router-dom"
+import { useCart } from "../contexts/CartContext.tsx"
 
 
 export function Navbar(){
 
     const [menuOpen, setMenuOpen] = useState(false)
+    const navigate = useNavigate()
+    const { cartCount } = useCart()
 
     return(
         <nav className="border-b border-[#E5E7EB]">
@@ -32,7 +36,7 @@ export function Navbar(){
                     <a href="#">New In</a>
                     <a href="#">Women</a>
                     <a href="#">Men</a>
-                    <a href="#">Sale</a>
+                    <button onClick={() => navigate("/sale")}>Sale</button>
                 </div>    
 
                 {/*Busca com barra - some no celular */}
@@ -52,11 +56,13 @@ export function Navbar(){
 
                     <button><Heart className="w-5 h-5" /></button>
                     <button><User className="w-5 h-5" /></button>
-                    <button className="relative">
+                    <button className="relative" onClick={() => navigate("/cart")}>
                         <ShoppingBag className="w-5 h-5" />
-                        <span className="absolute -top-4 -right-4 bg-black text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">
-                            2
-                        </span>
+                        {cartCount > 0 && (
+                            <span className="absolute -top-4 -right-4 bg-black text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">
+                                {cartCount}
+                            </span>
+                        )}
                     </button>
                     
                 </div>
@@ -69,7 +75,7 @@ export function Navbar(){
                     <a href="#">New In</a>
                     <a href="#">Women</a>
                     <a href="#">Men</a>
-                    <a href="#">Sale</a>
+                    <button className="text-left" onClick={() => navigate("/sale")}>Sale</button>
                 </div>
             )}
             
