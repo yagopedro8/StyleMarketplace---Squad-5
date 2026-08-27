@@ -1,11 +1,16 @@
 import nodemailer from "nodemailer";
 
+const mailHost = process.env.MAIL_HOST;
+const mailPort = process.env.MAIL_PORT;
+const mailUser = process.env.MAIL_USER;
+const mailPassword = process.env.MAIL_PASSWORD;
+
 const transporter = nodemailer.createTransport({
-  host: process.env.MAIL_HOST,
-  port: Number(process.env.MAIL_PORT),
+  host: mailHost,
+  port: Number(mailPort),
   auth: {
-    user: process.env.MAIL_USER,
-    pass: process.env.MAIL_PASSWORD,
+    user: mailUser,
+    pass: mailPassword,
   },
 });
 
