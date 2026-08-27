@@ -64,3 +64,12 @@ export const deletarCart = async (req: Request, res: Response) => {
     return res.status(404).json({ erro: 'Cart não encontrado' })
   }
 }
+
+export const getCarts = async (req: Request, res: Response) => {
+  try {
+    const carts = await prisma.cart.findMany(); 
+    return res.status(200).json(carts);
+  } catch (error) {
+    return res.status(500).json({ message: "Erro ao buscar carrinhos" });
+  }
+};
