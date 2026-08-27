@@ -10,7 +10,6 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { PageHeader } from "../components/PageHeader";
-import { Footer } from "../components/Footer";
 import { useCart } from "../contexts/CartContext.tsx";
 
 const outOfStockItems = [
@@ -378,8 +377,6 @@ export function CartPage() {
           </aside>
         </div>
       </div>
-
-      <Footer />
     </div>
   );
 }
