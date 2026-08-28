@@ -22,6 +22,9 @@ model Product {
   numOfReviews Int     @default(0)
   isOutOfStock Boolean @default(false)
   photoUrl     String?
+
+  saleId Int?
+  sale   Sale? @relation(fields: [saleId], references: [id])
   variants Variant[]
 }
 
@@ -68,4 +71,14 @@ model CartVariant {
   variantId Int
   variant Variant @relation(fields: [variantId], references: [id])
   quantity Int
+}
+
+model Sale {
+  id        Int      @id @default(autoincrement())
+  name      String
+  discount  Float
+  startDate DateTime
+  endDate   DateTime
+
+  products Product[]
 }
