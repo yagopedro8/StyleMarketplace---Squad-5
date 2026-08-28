@@ -11,6 +11,8 @@ import {
 } from "lucide-react";
 import { PageHeader } from "../components/PageHeader";
 import { useCart } from "../contexts/CartContext.tsx";
+import { getLoggedUserId } from "../utils/jwt";
+import { createOrder } from "../services/cart";
 
 const outOfStockItems = [
   {
@@ -31,6 +33,30 @@ export function CartPage() {
   } = useCart();
 
   const [promoCode, setPromoCode] = useState("");
+
+  const [checkingOut, setCheckingOut] = useState(false);
+
+async function handleCheckout() {
+  const userId = getLoggedUserId();
+
+  if (!userId) {
+    alert("Faça login para finalizar a compra.");
+    return;
+  }
+
+  setCheckingOut(true);
+
+  try {
+    await createOrder(userId);
+    alert("Pedido realizado com sucesso!");
+    window.location.reload();
+  } catch (err) {
+    console.error(err);
+    alert("Não foi possível finalizar o pedido.");
+  } finally {
+    setCheckingOut(false);
+  }
+}
 
   const subtotal = cart.reduce(
     (sum, item) => sum + item.price * item.quantity,
@@ -355,10 +381,11 @@ export function CartPage() {
               </div>
 
               <button
-                disabled={cart.length === 0}
+                disabled={cart.length === 0 || checkingOut}
+                onClick={handleCheckout}
                 className="w-full bg-black text-white rounded-lg py-3 text-sm font-semibold mb-2 disabled:bg-[#D1D5DB] disabled:cursor-not-allowed"
               >
-                Proceed to Checkout
+                {checkingOut ? "Processando..." : "Proceed to Checkout"}
               </button>
 
               <Link

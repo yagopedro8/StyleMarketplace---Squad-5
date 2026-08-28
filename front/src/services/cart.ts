@@ -65,3 +65,13 @@ export async function updateCartVariant(id: number, quantity: number) {
 export async function removeCartVariant(id: number) {
   await api.delete(`/cart-variants/${id}`)
 }
+
+export async function createOrder(userId: number) {
+  const token = localStorage.getItem("token")
+  const response = await api.post(
+    "/orders",
+    { userId },
+    { headers: { Authorization: `Bearer ${token}` } }
+  )
+ return response.data
+}

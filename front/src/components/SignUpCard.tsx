@@ -6,7 +6,7 @@ import { FormInput } from "./FormInput";
 import { PasswordInput } from "./PasswordInput";
 import { SocialMediaButtons } from "./SocialMediaButtons";
 import { DividerLine } from "./DividerLine";
-import { register, login } from "../services/auth";
+import { register } from "../services/auth";
 
 export function SignUpCard() {
   const navigate = useNavigate();
@@ -33,9 +33,7 @@ export function SignUpCard() {
 
     try {
       await register({ firstName, lastName, email, password });
-      const loginData = await login(email, password);
-      localStorage.setItem("token", loginData.token);
-      navigate("/home");
+      navigate("/signin");
     } catch (err) {
       if (axios.isAxiosError(err)) {
         setError(err.response?.data?.message || "Erro ao criar conta");
