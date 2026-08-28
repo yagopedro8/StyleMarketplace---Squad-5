@@ -1,10 +1,16 @@
 -- AlterTable
-ALTER TABLE "Cart"
-ADD COLUMN "userId" INTEGER NOT NULL;
+ALTER TABLE "Variant" ALTER COLUMN "productId" DROP NOT NULL;
 
--- AlterTable
+-- DropForeignKey
+ALTER TABLE "Variant" DROP CONSTRAINT "Variant_productId_fkey";
+
+-- AddForeignKey
 ALTER TABLE "Variant"
-ADD COLUMN "productId" INTEGER;
+ADD CONSTRAINT "Variant_productId_fkey"
+FOREIGN KEY ("productId")
+REFERENCES "Product"("id")
+ON DELETE SET NULL
+ON UPDATE CASCADE;
 
 -- CreateTable
 CREATE TABLE "OrderVariant" (
@@ -16,26 +22,6 @@ CREATE TABLE "OrderVariant" (
 
     CONSTRAINT "OrderVariant_pkey" PRIMARY KEY ("id")
 );
-
--- CreateIndex
-CREATE UNIQUE INDEX "Cart_userId_key"
-ON "Cart"("userId");
-
--- AddForeignKey
-ALTER TABLE "Cart"
-ADD CONSTRAINT "Cart_userId_fkey"
-FOREIGN KEY ("userId")
-REFERENCES "User"("id")
-ON DELETE RESTRICT
-ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Variant"
-ADD CONSTRAINT "Variant_productId_fkey"
-FOREIGN KEY ("productId")
-REFERENCES "Product"("id")
-ON DELETE SET NULL
-ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "OrderVariant"
