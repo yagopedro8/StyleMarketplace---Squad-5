@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Heart,
@@ -15,13 +15,44 @@ import {
   ArrowRight,
   Check,
 } from "lucide-react";
-import {
-  products,
-  categories,
-  type Category,
-  toCartItem,
-} from "../data/products";
 import { useCart } from "../contexts/CartContext.tsx";
+
+type ApiProduct = {
+  id: number;
+  name: string;
+  description: string;
+  price: number;
+  salePrice: number | null;
+  rating: number;
+  numOfReviews: number;
+  isOutOfStock: boolean;
+  photoUrl: string | null;
+};
+
+type SaleProduct = {
+  id: number;
+  name: string;
+  description: string;
+  price: number;
+  oldPrice: number;
+  discount: number;
+  rating: number;
+  reviews: number;
+  badge: string;
+  image: string;
+  isOutOfStock: boolean;
+};
+
+const categories = [
+  "All",
+  "Tops",
+  "Bottoms",
+  "Dresses",
+  "Shoes",
+  "Accessories",
+] as const;
+
+type Category = (typeof categories)[number];
 
 const sizes = [
   "XS",
@@ -39,37 +70,105 @@ const sizes = [
   "34",
 ];
 
+function mapApiProduct(product: ApiProduct): SaleProduct | null {
+  if (
+    product.salePrice === null ||
+    product.salePrice >= product.price
+  ) {
+    return null;
+  }
+
+  const discount = Math.round(
+    ((product.price - product.salePrice) / product.price) * 100
+  );
+
+  return {
+    id: product.id,
+    name: product.name,
+    description: product.description,
+    price: product.salePrice,
+    oldPrice: product.price,
+    discount,
+    rating: product.rating,
+    reviews: product.numOfReviews,
+    badge: product.isOutOfStock ? "ESGOTADO" : "SALE",
+    image:
+      product.photoUrl ||
+      "https://images.unsplash.com/photo-1525507119028-ed4c629a60a3?auto=format&fit=crop&w=800&q=80",
+    isOutOfStock: product.isOutOfStock,
+  };
+}
+
+function toCartItem(product: SaleProduct) {
+  return {
+    id: String(product.id),
+    name: product.name,
+    price: product.price,
+    image: product.image,
+    oldPrice: product.oldPrice,
+    discount: `-${product.discount}%`,
+  };
+}
+
 export function SalePage() {
   const navigate = useNavigate();
   const { cartCount, addToCart } = useCart();
 
-  const [category, setCategory] =
-    useState<Category>("All");
+  const [products, setProducts] = useState<SaleProduct[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
+  const [category, setCategory] = useState<Category>("All");
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("Featured");
   const [favorites, setFavorites] = useState<number[]>([]);
-  const [visibleProducts, setVisibleProducts] =
-    useState(6);
+  const [visibleProducts, setVisibleProducts] = useState(6);
 
-  const [mobileMenuOpen, setMobileMenuOpen] =
-    useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
-  const [filtersOpen, setFiltersOpen] =
-    useState(false);
-
-  const [selectedSizes, setSelectedSizes] =
-    useState<string[]>([]);
+  const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
 
   const [email, setEmail] = useState("");
-  const [subscribed, setSubscribed] =
-    useState(false);
+  const [subscribed, setSubscribed] = useState(false);
+
+  useEffect(() => {
+    async function loadProducts() {
+      try {
+        setLoading(true);
+        setError("");
+
+        const response = await fetch("/products");
+
+        if (!response.ok) {
+          throw new Error("Erro ao buscar produtos.");
+        }
+
+        const data: ApiProduct[] = await response.json();
+
+        const saleProducts = data
+          .map(mapApiProduct)
+          .filter(
+            (product): product is SaleProduct =>
+              product !== null
+          );
+
+        setProducts(saleProducts);
+      } catch (err) {
+        console.error(err);
+        setError("Não foi possível carregar os produtos.");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadProducts();
+  }, []);
 
   const filteredProducts = useMemo(() => {
     let result = products.filter((product) => {
       const matchesCategory =
-        category === "All" ||
-        product.category === category;
+        category === "All";
 
       const matchesSearch = product.name
         .toLowerCase()
@@ -97,7 +196,7 @@ export function SalePage() {
     }
 
     return result;
-  }, [category, search, sort]);
+  }, [products, category, search, sort]);
 
   const displayedProducts =
     filteredProducts.slice(0, visibleProducts);
@@ -258,12 +357,20 @@ export function SalePage() {
 
         <section className="sale-stats">
           <div>
-            <strong>70%</strong>
+            <strong>
+              {products.length > 0
+                ? `${Math.max(
+                    ...products.map(
+                      (product) => product.discount
+                    )
+                  )}%`
+                : "0%"}
+            </strong>
             <span>Max Discount</span>
           </div>
 
           <div>
-            <strong>500+</strong>
+            <strong>{products.length}</strong>
             <span>Items on Sale</span>
           </div>
 
@@ -445,7 +552,21 @@ export function SalePage() {
               </div>
             </div>
 
-            {displayedProducts.length > 0 ? (
+            {loading ? (
+              <div className="empty-state">
+                <p>Carregando produtos...</p>
+              </div>
+            ) : error ? (
+              <div className="empty-state">
+                <Search size={32} />
+
+                <h3>
+                  Erro ao carregar produtos
+                </h3>
+
+                <p>{error}</p>
+              </div>
+            ) : displayedProducts.length > 0 ? (
               <div className="product-grid">
                 {displayedProducts.map(
                   (product) => (
@@ -453,7 +574,6 @@ export function SalePage() {
                       className="product-card"
                       key={product.id}
                     >
-                      {/* IMAGEM CLICÁVEL */}
                       <div
                         className="product-image-wrapper cursor-pointer"
                         onClick={() =>
@@ -507,9 +627,7 @@ export function SalePage() {
 
                       <div className="product-info">
                         <div className="product-meta">
-                          <span>
-                            {product.category}
-                          </span>
+                          <span>Sale</span>
 
                           <div className="rating">
                             <Star
@@ -527,7 +645,6 @@ export function SalePage() {
                           </div>
                         </div>
 
-                        {/* NOME CLICÁVEL */}
                         <h3
                           className="cursor-pointer hover:underline"
                           onClick={() =>
@@ -550,13 +667,16 @@ export function SalePage() {
 
                           <span>
                             Save $
-                            {product.oldPrice -
-                              product.price}
+                            {(
+                              product.oldPrice -
+                              product.price
+                            ).toFixed(2)}
                           </span>
                         </div>
 
                         <button
                           className="add-cart-button"
+                          disabled={product.isOutOfStock}
                           onClick={() =>
                             addToCart(
                               toCartItem(
@@ -566,7 +686,10 @@ export function SalePage() {
                           }
                         >
                           <ShoppingBag size={15} />
-                          Add to Cart
+
+                          {product.isOutOfStock
+                            ? "Out of Stock"
+                            : "Add to Cart"}
                         </button>
                       </div>
                     </article>

@@ -54,11 +54,15 @@ export async function createUser(req: Request, res: Response) {
       ...userWithoutPassword
     } = user;
 
-    await Mailer.sendEmail(
-      email,
-      "Bem-vindo ao StyleMarketplace!",
-      `Olá ${firstName}, seja bem-vindo ao StyleMarketplace!`
-    );
+    try {
+      await Mailer.sendEmail(
+        email,
+        "Bem-vindo ao StyleMarketplace!",
+        `Olá ${firstName}, seja bem-vindo ao StyleMarketplace!`
+      );
+    } catch (emailError) {
+      console.log(emailError);
+    }
 
     return res.status(201).json({
       message: "Usuário criado com sucesso.",
