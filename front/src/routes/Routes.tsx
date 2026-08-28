@@ -11,12 +11,12 @@ export default function AppRoutes() {
     <Router>
       <Routes>
         <Route path="/" element={<Navigate to="/signin" replace />} />
-        <Route element={<SignInPage />} path="/signin" />
-        <Route element={<SignUpPage />} path="/signup" />
-        <Route element={<HomePage />} path="/home" />
-        <Route element={<SalePage />} path="/sale" />
-        <Route element={<CartPage />} path="/cart" />
-        <Route element={<ProductPage />} path="/product/:productId" />
+        <Route path="/signin" element={<SignInPage />} />
+        <Route path="/signup" element={<SignUpPage />} />
+        <Route path="/home" element={<HomePage />} />
+        <Route path="/sale" element={<SalePage />} />
+        <Route path="/cart" element={<CartPage />} />
+        <Route path="/product/:productId" element={<ProductPage />} />
       </Routes>
     </Router>
   );

@@ -80,7 +80,7 @@ export function CartPage() {
                 </p>
 
                 <Link
-                  to="/"
+                  to="/sale"
                   className="inline-block bg-black !text-white rounded-lg px-5 py-2.5 text-sm font-semibold"
                 >
                   Continue Shopping
@@ -362,7 +362,7 @@ export function CartPage() {
               </button>
 
               <Link
-                to="/"
+                to="/sale"
                 className="block text-center text-xs text-[#454b54] underline mb-3"
               >
                 Continue Shopping
