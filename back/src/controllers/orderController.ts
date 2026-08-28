@@ -3,15 +3,11 @@ import prisma from "../config/prisma";
 
 export async function createOrder(req: Request, res: Response) {
   try {
-    const {
-      status,
-      totalValue,
-      userId,
-    } = req.body;
+    const { userId } = req.body;
 
-    if (!status || totalValue === undefined || !userId) {
+    if (!userId) {
       return res.status(400).json({
-        message: "Preencha os campos obrigatórios.",
+        message: "Usuário é obrigatório.",
       });
     }
 
@@ -27,12 +23,141 @@ export async function createOrder(req: Request, res: Response) {
       });
     }
 
-    const order = await prisma.order.create({
-      data: {
-        status,
-        totalValue: Number(totalValue),
+    const cart = await prisma.cart.findUnique({
+      where: {
         userId: Number(userId),
       },
+      include: {
+        cartVariants: {
+          include: {
+            variant: {
+              include: {
+                product: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!cart) {
+      return res.status(404).json({
+        message: "Carrinho não encontrado.",
+      });
+    }
+
+    if (cart.cartVariants.length === 0) {
+      return res.status(400).json({
+        message: "O carrinho está vazio.",
+      });
+    }
+
+    const order = await prisma.$transaction(async (tx) => {
+      let totalValue = 0;
+
+      for (const cartVariant of cart.cartVariants) {
+        const product = cartVariant.variant.product;
+
+        if (!product) {
+          throw new Error(
+            `Produto da variante ${cartVariant.variantId} não encontrado.`
+          );
+        }
+
+        if (cartVariant.variant.stock < cartVariant.quantity) {
+          throw new Error(
+            `Estoque insuficiente para a variante ${cartVariant.variantId}.`
+          );
+        }
+
+        const unitPrice =
+          product.salePrice !== null
+            ? product.salePrice
+            : product.price;
+
+        totalValue += unitPrice * cartVariant.quantity;
+      }
+
+      const createdOrder = await tx.order.create({
+        data: {
+          status: "PENDING",
+          totalValue,
+          userId: Number(userId),
+        },
+      });
+
+      for (const cartVariant of cart.cartVariants) {
+        const product = cartVariant.variant.product;
+
+        if (!product) {
+          throw new Error(
+            `Produto da variante ${cartVariant.variantId} não encontrado.`
+          );
+        }
+
+        const unitPrice =
+          product.salePrice !== null
+            ? product.salePrice
+            : product.price;
+
+        await tx.orderVariant.create({
+          data: {
+            quantity: cartVariant.quantity,
+            unitPrice,
+            orderId: createdOrder.id,
+            variantId: cartVariant.variantId,
+          },
+        });
+
+        await tx.variant.update({
+          where: {
+            id: cartVariant.variantId,
+          },
+          data: {
+            stock: {
+              decrement: cartVariant.quantity,
+            },
+          },
+        });
+      }
+
+      await tx.cartVariant.deleteMany({
+        where: {
+          cartId: cart.id,
+        },
+      });
+
+      return tx.order.findUnique({
+        where: {
+          id: createdOrder.id,
+        },
+        include: {
+          user: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              email: true,
+              gender: true,
+              phoneNumber: true,
+              dateBirth: true,
+              memberSince: true,
+              totalOrders: true,
+              totalRating: true,
+              totalWishlist: true,
+            },
+          },
+          orderVariants: {
+            include: {
+              variant: {
+                include: {
+                  product: true,
+                },
+              },
+            },
+          },
+        },
+      });
     });
 
     return res.status(201).json({
@@ -42,7 +167,10 @@ export async function createOrder(req: Request, res: Response) {
   } catch (error) {
     return res.status(500).json({
       message: "Erro ao criar pedido.",
-      error,
+      error:
+        error instanceof Error
+          ? error.message
+          : error,
     });
   }
 }
@@ -96,10 +224,7 @@ export async function updateOrder(req: Request, res: Response) {
   try {
     const id = Number(req.params.id);
 
-    const {
-      status,
-      totalValue,
-    } = req.body;
+    const { status } = req.body;
 
     const orderExists = await prisma.order.findUnique({
       where: {
@@ -118,13 +243,10 @@ export async function updateOrder(req: Request, res: Response) {
         id,
       },
       data: {
-        ...(status !== undefined && {
-          status,
-        }),
-        ...(totalValue !== undefined && {
-          totalValue: Number(totalValue),
-        }),
-      },
+  ...(status !== undefined && {
+    status,
+  }),
+},
     });
 
     return res.status(200).json({
