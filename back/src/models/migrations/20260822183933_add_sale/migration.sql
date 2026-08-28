@@ -1,17 +1,5 @@
-/*
-  Warnings:
-
-  - You are about to drop the `Order` table. If the table is not empty, all the data it contains will be lost.
-
-*/
--- DropForeignKey
-ALTER TABLE "Order" DROP CONSTRAINT "Order_userId_fkey";
-
 -- AlterTable
-ALTER TABLE "Product" ADD COLUMN     "saleId" INTEGER;
-
--- DropTable
-DROP TABLE "Order";
+ALTER TABLE "Product" ADD COLUMN "saleId" INTEGER;
 
 -- CreateTable
 CREATE TABLE "Sale" (
@@ -25,4 +13,9 @@ CREATE TABLE "Sale" (
 );
 
 -- AddForeignKey
-ALTER TABLE "Product" ADD CONSTRAINT "Product_saleId_fkey" FOREIGN KEY ("saleId") REFERENCES "Sale"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "Product"
+ADD CONSTRAINT "Product_saleId_fkey"
+FOREIGN KEY ("saleId")
+REFERENCES "Sale"("id")
+ON DELETE SET NULL
+ON UPDATE CASCADE;
