@@ -62,7 +62,7 @@ export function Navbar() {
                         <Heart className="w-5 h-5" />
                     </button>
 
-                    <button>
+                    <button onClick={() => navigate("/signin")}>
                         <User className="w-5 h-5" />
                     </button>
 

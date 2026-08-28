@@ -259,7 +259,7 @@ export function SalePage() {
             )}
           </button>
 
-          <a className="logo" href="/">
+          <a className="logo" href="/home">
             <span className="logo-mark">
               S
             </span>
@@ -302,6 +302,7 @@ export function SalePage() {
             <button
               className="user-button"
               aria-label="Account"
+              onClick={() => navigate("/signin")}
             >
               <UserRound size={16} />
               <span>JD</span>
