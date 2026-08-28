@@ -25,7 +25,8 @@ export function SignInCard(){
     try {
         const data = await login(email, password)
         localStorage.setItem("token", data.token)
-        navigate("/home")
+        window.dispatchEvent(new Event("auth-changed"))
+        navigate("/")
     } catch (err) {
         if (axios.isAxiosError(err)) {
             setError(err.response?.data?.message || "Erro ao fazer login")

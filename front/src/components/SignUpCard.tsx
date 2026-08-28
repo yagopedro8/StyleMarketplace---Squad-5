@@ -35,7 +35,8 @@ export function SignUpCard() {
       await register({ firstName, lastName, email, password })
       const loginData = await login(email, password)
       localStorage.setItem("token", loginData.token)
-      navigate("/home")
+      window.dispatchEvent(new Event("auth-changed"))
+      navigate("/")
     } catch (err) {
       if (axios.isAxiosError(err)) {
         setError(err.response?.data?.message || "Erro ao criar conta")

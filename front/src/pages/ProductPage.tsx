@@ -76,13 +76,14 @@ export function ProductPage() {
   >(tabs[0]);
 
   function handleAddToCart() {
-    for (let i = 0; i < quantity; i++) {
-      addToCart({
+    addToCart(
+      {
         ...toCartItem(currentProduct),
         color: selectedColor,
         size: selectedSize,
-      });
-    }
+      },
+      quantity
+    );
   }
 
   return (
