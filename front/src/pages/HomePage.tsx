@@ -1,9 +1,12 @@
 import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react"
 import { Truck, RotateCcw, ShieldCheck } from "lucide-react";
 import { PageHeader } from "../components/PageHeader";
 import { Footer } from "../components/Footer";
 import { ProductCard } from "../components/ProductCard";
-import { products } from "../data/products";
+import { getProducts } from "../services/products";
+import type { Product } from "../data/products";
+
 
 const categories = [
   { name: "Women's Fashion", count: "150+ items" },
@@ -12,10 +15,24 @@ const categories = [
   { name: "Shoes", count: "95+ items" },
 ];
 
-const featuredProducts = products.slice(0, 3);
+
 
 export function HomePage() {
   const navigate = useNavigate();
+
+  const [featuredProducts, setFeaturedProducts] = useState<Product[]>([])
+
+  useEffect(() => {
+    async function fetchProducts() {
+      try {
+        const data = await getProducts()
+        setFeaturedProducts(data.slice(0, 3))
+      } catch (error) {
+        console.error("Erro ao buscar produtos", error)
+      }
+    }
+      fetchProducts()
+  }, [])
 
   return (
     <div className="min-h-screen bg-white">
