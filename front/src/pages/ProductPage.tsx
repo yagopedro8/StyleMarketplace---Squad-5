@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   ChevronLeft,
@@ -13,8 +13,10 @@ import {
 import { PageHeader } from "../components/PageHeader";
 import { Footer } from "../components/Footer";
 import { ProductCard } from "../components/ProductCard";
-import { products, toCartItem } from "../data/products";
+import { toCartItem } from "../data/products";
+import type { Product } from "../data/products";
 import { useCart } from "../contexts/CartContext.tsx";
+import { getProductById, getProducts } from "../services/products";
 
 const colors = [
   { name: "Black", value: "#111827" },
@@ -31,18 +33,63 @@ export function ProductPage() {
   const navigate = useNavigate();
   const { addToCart } = useCart();
 
-  const product = products.find(
-    (p) => String(p.id) === productId
-  );
+  const [currentProduct, setCurrentProduct] = useState<Product | null>(null);
+  const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  if (!product) {
+  const [selectedColor, setSelectedColor] = useState(colors[0].name);
+  const [selectedSize, setSelectedSize] = useState("M");
+  const [quantity, setQuantity] = useState(1);
+  const [activeTab, setActiveTab] = useState<(typeof tabs)[number]>(tabs[0]);
+
+  useEffect(() => {
+    async function fetchData() {
+      setLoading(true);
+      try {
+        const product = await getProductById(Number(productId));
+        setCurrentProduct(product);
+
+        const allProducts = await getProducts();
+        const related = allProducts
+          .filter(
+            (p) => p.category === product.category && p.id !== product.id
+          )
+          .slice(0, 3);
+        setRelatedProducts(related);
+      } catch (error) {
+        console.error("Erro ao buscar produto", error);
+        setCurrentProduct(null);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchData();
+  }, [productId]);
+
+  function handleAddToCart() {
+    if (!currentProduct) return;
+    for (let i = 0; i < quantity; i++) {
+      addToCart({
+        ...toCartItem(currentProduct),
+        color: selectedColor,
+        size: selectedSize,
+      });
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <p className="text-sm text-[#6B7280]">Carregando produto...</p>
+      </div>
+    );
+  }
+
+  if (!currentProduct) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center px-4">
         <div className="text-center">
-          <h1 className="text-xl font-bold mb-2">
-            Product not found
-          </h1>
-
+          <h1 className="text-xl font-bold mb-2">Product not found</h1>
           <button
             onClick={() => navigate("/sale")}
             className="bg-black text-white rounded-lg px-5 py-2 text-sm font-semibold"
@@ -52,37 +99,6 @@ export function ProductPage() {
         </div>
       </div>
     );
-  }
-
-  const currentProduct = product;
-
-  const relatedProducts = products
-    .filter(
-      (p) =>
-        p.category === currentProduct.category &&
-        p.id !== currentProduct.id
-    )
-    .slice(0, 3);
-
-  const [selectedColor, setSelectedColor] = useState(
-    colors[0].name
-  );
-
-  const [selectedSize, setSelectedSize] = useState("M");
-  const [quantity, setQuantity] = useState(1);
-
-  const [activeTab, setActiveTab] = useState<
-    (typeof tabs)[number]
-  >(tabs[0]);
-
-  function handleAddToCart() {
-    for (let i = 0; i < quantity; i++) {
-      addToCart({
-        ...toCartItem(currentProduct),
-        color: selectedColor,
-        size: selectedSize,
-      });
-    }
   }
 
   return (
@@ -113,33 +129,18 @@ export function ProductPage() {
               <span className="absolute top-2 left-2 bg-[#EF3340] text-white text-[10px] font-bold px-2 py-1 rounded-full">
                 -{currentProduct.discount}%
               </span>
-
-              <button
-                type="button"
-                className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white shadow flex items-center justify-center"
-              >
+              <button type="button" className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white shadow flex items-center justify-center">
                 <ChevronLeft className="w-4 h-4" />
               </button>
-
-              <button
-                type="button"
-                className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white shadow flex items-center justify-center"
-              >
+              <button type="button" className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white shadow flex items-center justify-center">
                 <ChevronRight className="w-4 h-4" />
               </button>
             </div>
 
             <div className="grid grid-cols-4 gap-2 mt-3">
               {[0, 1, 2, 3].map((i) => (
-                <div
-                  key={i}
-                  className="h-16 rounded-md bg-[#EDEDED] overflow-hidden border-2 border-transparent"
-                >
-                  <img
-                    src={currentProduct.image}
-                    alt=""
-                    className="w-full h-full object-cover"
-                  />
+                <div key={i} className="h-16 rounded-md bg-[#EDEDED] overflow-hidden border-2 border-transparent">
+                  <img src={currentProduct.image} alt="" className="w-full h-full object-cover" />
                 </div>
               ))}
             </div>
@@ -162,11 +163,7 @@ export function ProductPage() {
 
             <div className="flex flex-wrap items-center gap-1 text-xs text-[#6B7280] mb-3">
               <Star className="w-3 h-3 fill-[#F6BA00] text-[#F6BA00]" />
-
-              <strong className="text-black">
-                {currentProduct.rating}
-              </strong>
-
+              <strong className="text-black">{currentProduct.rating}</strong>
               ({currentProduct.reviews} reviews)
             </div>
 
@@ -180,34 +177,23 @@ export function ProductPage() {
               </del>
 
               <span className="text-[10px] text-[#EF3340] bg-red-50 px-1.5 py-0.5 rounded">
-                Save $
-                {currentProduct.oldPrice -
-                  currentProduct.price}
+                Save ${currentProduct.oldPrice - currentProduct.price}
               </span>
             </div>
 
-            <p className="text-xs text-green-600 mb-4">
-              In Stock
-            </p>
+            <p className="text-xs text-green-600 mb-4">In Stock</p>
 
             <div className="mb-4">
-              <h3 className="text-sm font-semibold mb-2">
-                Color: {selectedColor}
-              </h3>
-
+              <h3 className="text-sm font-semibold mb-2">Color: {selectedColor}</h3>
               <div className="flex gap-2">
                 {colors.map((c) => (
                   <button
                     type="button"
                     key={c.name}
-                    onClick={() =>
-                      setSelectedColor(c.name)
-                    }
+                    onClick={() => setSelectedColor(c.name)}
                     style={{ background: c.value }}
                     className={`w-6 h-6 rounded-full border-2 border-white ${
-                      selectedColor === c.name
-                        ? "ring-2 ring-black"
-                        : "ring-1 ring-[#E5E7EB]"
+                      selectedColor === c.name ? "ring-2 ring-black" : "ring-1 ring-[#E5E7EB]"
                     }`}
                   />
                 ))}
@@ -233,13 +219,9 @@ export function ProductPage() {
                   <button
                     type="button"
                     key={s}
-                    onClick={() =>
-                      setSelectedSize(s)
-                    }
+                    onClick={() => setSelectedSize(s)}
                     className={`w-9 h-8 rounded-md border text-xs ${
-                      selectedSize === s
-                        ? "bg-black text-white border-black"
-                        : "border-[#E5E7EB]"
+                      selectedSize === s ? "bg-black text-white border-black" : "border-[#E5E7EB]"
                     }`}
                   >
                     {s}
@@ -249,34 +231,11 @@ export function ProductPage() {
             </div>
 
             <div className="mb-5">
-              <h3 className="text-sm font-semibold mb-2">
-                Quantity
-              </h3>
-
+              <h3 className="text-sm font-semibold mb-2">Quantity</h3>
               <div className="inline-flex items-center gap-3 border border-[#E5E7EB] rounded-lg px-3 py-1.5">
-                <button
-                  type="button"
-                  onClick={() =>
-                    setQuantity((q) =>
-                      Math.max(1, q - 1)
-                    )
-                  }
-                >
-                  -
-                </button>
-
-                <span className="text-sm">
-                  {quantity}
-                </span>
-
-                <button
-                  type="button"
-                  onClick={() =>
-                    setQuantity((q) => q + 1)
-                  }
-                >
-                  +
-                </button>
+                <button type="button" onClick={() => setQuantity((q) => Math.max(1, q - 1))}>-</button>
+                <span className="text-sm">{quantity}</span>
+                <button type="button" onClick={() => setQuantity((q) => q + 1)}>+</button>
               </div>
             </div>
 
@@ -289,7 +248,6 @@ export function ProductPage() {
                 <ShoppingCart className="w-4 h-4" />
                 Add to Cart
               </button>
-
               <button
                 type="button"
                 onClick={() => {
@@ -311,28 +269,13 @@ export function ProductPage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 border-t border-[#E5E7EB] pt-4">
               {[
-                {
-                  icon: Truck,
-                  title: "Free Shipping",
-                },
-                {
-                  icon: RotateCcw,
-                  title: "Easy Returns",
-                },
-                {
-                  icon: ShieldCheck,
-                  title: "Secure Payment",
-                },
+                { icon: Truck, title: "Free Shipping" },
+                { icon: RotateCcw, title: "Easy Returns" },
+                { icon: ShieldCheck, title: "Secure Payment" },
               ].map(({ icon: Icon, title }) => (
-                <div
-                  key={title}
-                  className="flex flex-col items-center text-center gap-1"
-                >
+                <div key={title} className="flex flex-col items-center text-center gap-1">
                   <Icon className="w-5 h-5" />
-
-                  <strong className="text-xs">
-                    {title}
-                  </strong>
+                  <strong className="text-xs">{title}</strong>
                 </div>
               ))}
             </div>
@@ -360,36 +303,21 @@ export function ProductPage() {
           <div className="py-4 text-sm text-[#454b54] leading-relaxed">
             {activeTab === "Description" && (
               <p>
-                {currentProduct.name} faz parte da nossa
-                coleção {currentProduct.category} —{" "}
-                {currentProduct.badge}. Avaliado em{" "}
-                {currentProduct.rating} por{" "}
-                {currentProduct.reviews} clientes.
+                {currentProduct.name} faz parte da nossa coleção {currentProduct.category} — {currentProduct.badge}.
+                Avaliado em {currentProduct.rating} por {currentProduct.reviews} clientes.
               </p>
             )}
-
-            {activeTab === "Specifications" && (
-              <p>Specifications coming soon.</p>
-            )}
-
-            {activeTab === "Reviews" && (
-              <p>Reviews coming soon.</p>
-            )}
+            {activeTab === "Specifications" && <p>Specifications coming soon.</p>}
+            {activeTab === "Reviews" && <p>Reviews coming soon.</p>}
           </div>
         </div>
 
         {relatedProducts.length > 0 && (
           <div className="mt-10">
-            <h2 className="text-xl font-bold mb-4">
-              You Might Also Like
-            </h2>
-
+            <h2 className="text-xl font-bold mb-4">You Might Also Like</h2>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
               {relatedProducts.map((p) => (
-                <ProductCard
-                  key={p.id}
-                  product={p}
-                />
+                <ProductCard key={p.id} product={p} />
               ))}
             </div>
           </div>

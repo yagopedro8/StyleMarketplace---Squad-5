@@ -8,7 +8,6 @@ export async function createProduct(req: Request, res: Response) {
       description,
       price,
       salePrice,
-      photoUrl,
     } = req.body;
 
     if (!name || !description || price === undefined) {
@@ -16,6 +15,10 @@ export async function createProduct(req: Request, res: Response) {
         message: "Preencha os campos obrigatórios.",
       });
     }
+
+    const photoUrl = req.file
+      ? `/uploads/${req.file.filename}`
+      : null;
 
     const product = await prisma.product.create({
       data: {
@@ -26,7 +29,7 @@ export async function createProduct(req: Request, res: Response) {
           salePrice !== undefined && salePrice !== null
             ? Number(salePrice)
             : null,
-        photoUrl: photoUrl ?? null,
+        photoUrl,
       },
     });
 
@@ -85,12 +88,11 @@ export async function updateProduct(req: Request, res: Response) {
     const id = Number(req.params.id);
 
     const {
-    name,
-    description,
-    price,
-    salePrice,
-    photoUrl,
-  } = req.body;
+      name,
+      description,
+      price,
+      salePrice,
+    } = req.body;
 
     const productExists = await prisma.product.findUnique({
       where: {
@@ -104,13 +106,19 @@ export async function updateProduct(req: Request, res: Response) {
       });
     }
 
+    const photoUrl = req.file
+      ? `/uploads/${req.file.filename}`
+      : undefined;
+
     const updatedProduct = await prisma.product.update({
       where: {
         id,
       },
 
       data: {
-        ...(name !== undefined && { name }),
+        ...(name !== undefined && {
+          name,
+        }),
 
         ...(description !== undefined && {
           description,

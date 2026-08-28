@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import prisma from "../config/prisma";
 import auth from "../config/auth";
+import Mailer from "../config/mailer";
 
 export async function createUser(req: Request, res: Response) {
   try {
@@ -48,19 +49,27 @@ export async function createUser(req: Request, res: Response) {
     });
 
     const {
-    hash: _hash,
-    salt: _salt,
-    ...userWithoutPassword
+      hash: _hash,
+      salt: _salt,
+      ...userWithoutPassword
     } = user;
+
+    await Mailer.sendEmail(
+      email,
+      "Bem-vindo ao StyleMarketplace!",
+      `Olá ${firstName}, seja bem-vindo ao StyleMarketplace!`
+    );
 
     return res.status(201).json({
       message: "Usuário criado com sucesso.",
       user: userWithoutPassword,
     });
   } catch (error) {
+    console.log(error);
+
     return res.status(500).json({
       message: "Erro ao criar usuário.",
-      error,
+      error: error instanceof Error ? error.message : error,
     });
   }
 }
@@ -145,7 +154,9 @@ export async function updateUser(req: Request, res: Response) {
     } = req.body;
 
     const userExists = await prisma.user.findUnique({
-      where: { id },
+      where: {
+        id,
+      },
     });
 
     if (!userExists) {
@@ -158,15 +169,19 @@ export async function updateUser(req: Request, res: Response) {
     let salt = userExists.salt;
 
     if (password) {
-      const { hash: newHash, salt: newSalt } =
-        auth.generatePassword(password);
+      const {
+        hash: newHash,
+        salt: newSalt,
+      } = auth.generatePassword(password);
 
       hash = newHash;
       salt = newSalt;
     }
 
     const updatedUser = await prisma.user.update({
-      where: { id },
+      where: {
+        id,
+      },
       data: {
         firstName,
         lastName,
@@ -204,7 +219,9 @@ export async function deleteUser(req: Request, res: Response) {
     const id = Number(req.params.id);
 
     const userExists = await prisma.user.findUnique({
-      where: { id },
+      where: {
+        id,
+      },
     });
 
     if (!userExists) {
@@ -214,7 +231,9 @@ export async function deleteUser(req: Request, res: Response) {
     }
 
     await prisma.user.delete({
-      where: { id },
+      where: {
+        id,
+      },
     });
 
     return res.status(200).json({
@@ -227,9 +246,13 @@ export async function deleteUser(req: Request, res: Response) {
     });
   }
 }
+
 export async function login(req: Request, res: Response) {
   try {
-    const { email, password } = req.body;
+    const {
+      email,
+      password,
+    } = req.body;
 
     if (!email || !password) {
       return res.status(400).json({
@@ -250,10 +273,10 @@ export async function login(req: Request, res: Response) {
     }
 
     const passwordIsValid = auth.checkPassword(
-    password,
-    user.hash,
-    user.salt
-);
+      password,
+      user.hash,
+      user.salt
+    );
 
     if (!passwordIsValid) {
       return res.status(401).json({
@@ -261,7 +284,9 @@ export async function login(req: Request, res: Response) {
       });
     }
 
-    const token = auth.generateJWT(user.id.toString());
+    const token = auth.generateJWT(
+      user.id.toString()
+    );
 
     return res.status(200).json({
       message: "Login realizado com sucesso.",
