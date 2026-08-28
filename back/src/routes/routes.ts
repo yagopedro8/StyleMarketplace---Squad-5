@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { uploadSingle } from "../config/uploader";
 
 import {
   createUser,
@@ -18,6 +19,47 @@ import {
   createUserSchema,
   updateUserSchema,
 } from "../schemas/userSchema";
+
+import {
+  createProduct,
+  getProducts,
+  getProductById,
+  updateProduct,
+  deleteProduct,
+} from "../controllers/productController";
+
+import {
+  createProductSchema,
+  updateProductSchema,
+} from "../schemas/productSchema";
+
+import {
+  createSale,
+  getSales,
+  getSaleById,
+  updateSale,
+  deleteSale,
+} from "../controllers/saleController";
+
+import {
+  createSaleSchema,
+  updateSaleSchema,
+} from "../schemas/saleSchema";
+import {  
+  criarCart,
+  listarCarts,
+  buscarCart,
+  atualizarCart,
+  deletarCart,
+} from "../controllers/cartController";
+
+import {
+  criarCartVariant,
+  listarCartVariants,
+  buscarCartVariant,
+  atualizarCartVariant,
+  deletarCartVariant,
+} from "../controllers/cartVariantController";
 
 const router = Router();
 
@@ -67,40 +109,6 @@ router.delete(
   deleteUser
 );
 
-// Order routes
-
-router.post(
-  "/orders",
-  authMiddleware,
-  validate(createOrderSchema),
-  createOrder
-);
-
-router.get(
-  "/orders",
-  authMiddleware,
-  getOrders
-);
-
-router.get(
-  "/orders/:id",
-  authMiddleware,
-  getOrderById
-);
-
-router.put(
-  "/orders/:id",
-  authMiddleware,
-  validate(updateOrderSchema),
-  updateOrder
-);
-
-router.delete(
-  "/orders/:id",
-  authMiddleware,
-  deleteOrder
-);
-
 // Auth
 
 router.post(
@@ -114,5 +122,19 @@ router.get("/variants", listarVariants);
 router.get("/variants/:id", buscarVariant);
 router.put("/variants/:id", atualizarVariant);
 router.delete("/variants/:id", deletarVariant);
+
+// Cart routes
+router.post("/carts", criarCart);
+router.get("/carts", listarCarts);
+router.get("/carts/:id", buscarCart);
+router.put("/carts/:id", atualizarCart);
+router.delete("/carts/:id", deletarCart);
+
+// CartVariant routes
+router.post("/cart-variants", criarCartVariant);
+router.get("/cart-variants", listarCartVariants);
+router.get("/cart-variants/:id", buscarCartVariant);
+router.put("/cart-variants/:id", atualizarCartVariant);
+router.delete("/cart-variants/:id", deletarCartVariant);
 
 export default router;

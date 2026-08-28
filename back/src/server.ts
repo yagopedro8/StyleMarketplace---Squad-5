@@ -20,4 +20,12 @@ app.get('/', (req, res) => {
 app.listen(port, () => {
 console.log(`${process.env.APP_NAME} app listening at http://localhost:${port}`);
 });
+
+// no server.ts
+import path from "node:path";
+
+app.use(
+  "/uploads",
+  express.static(path.resolve(__dirname, "..", "uploads"))
+);
     
